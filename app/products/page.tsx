@@ -1,15 +1,19 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useSearchParams } from "next/navigation"
-import { Navbar } from "@/components/navbar"
-import { ProductCard } from "@/components/product-card"
-import { Footer } from "@/components/footer"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useApp } from "@/contexts/app-context"
-import { t } from "@/lib/i18n"
-import { ChevronLeft, ChevronRight, Filter } from "lucide-react"
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { ProductCard } from "@/components/product-card";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useApp } from "@/contexts/app-context";
+import { t } from "@/lib/i18n";
+import { ChevronLeft, ChevronRight, Filter } from "lucide-react";
 
 // Mock products data (expanded)
 const allProducts = [
@@ -17,8 +21,8 @@ const allProducts = [
   {
     id: 1,
     name: "Premium Wireless Headphones",
-    price: 299,
-    originalPrice: 399,
+    price: 2.99,
+    originalPrice: 3.99,
     image: "/placeholder.svg?height=300&width=300",
     rating: 4.8,
     reviews: 124,
@@ -110,70 +114,75 @@ const allProducts = [
     id: 19 + i,
     name: `Product ${19 + i}`,
     price: Math.floor(Math.random() * 200) + 20,
-    originalPrice: Math.random() > 0.5 ? Math.floor(Math.random() * 100) + 250 : null,
+    originalPrice:
+      Math.random() > 0.5 ? Math.floor(Math.random() * 100) + 250 : null,
     image: "/placeholder.svg?height=300&width=300",
     rating: 4 + Math.random(),
     reviews: Math.floor(Math.random() * 200) + 10,
-    category: ["electronics", "clothing", "home_garden_cat", "sports_outdoors"][Math.floor(Math.random() * 4)],
+    category: ["electronics", "clothing", "home_garden_cat", "sports_outdoors"][
+      Math.floor(Math.random() * 4)
+    ],
     description: `Description for product ${19 + i}`,
   })),
-]
+];
 
-const PRODUCTS_PER_PAGE = 16
+const PRODUCTS_PER_PAGE = 16;
 
 export default function ProductsPage() {
-  const { language } = useApp()
-  const searchParams = useSearchParams()
-  const [filteredProducts, setFilteredProducts] = useState(allProducts)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [selectedCategory, setSelectedCategory] = useState<string>("all")
-  const [sortBy, setSortBy] = useState<string>("name_a_z")
+  const { language } = useApp();
+  const searchParams = useSearchParams();
+  const [filteredProducts, setFilteredProducts] = useState(allProducts);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<string>("name_a_z");
 
   // Get category from URL params
   useEffect(() => {
-    const category = searchParams.get("category")
+    const category = searchParams.get("category");
     if (category) {
-      setSelectedCategory(category)
+      setSelectedCategory(category);
     }
-  }, [searchParams])
+  }, [searchParams]);
 
   // Filter and sort products
   useEffect(() => {
-    let filtered = allProducts
+    let filtered = allProducts;
 
     // Filter by category
     if (selectedCategory !== "all") {
-      filtered = filtered.filter((product) => product.category === selectedCategory)
+      filtered = filtered.filter(
+        (product) => product.category === selectedCategory
+      );
     }
 
     // Sort products
     switch (sortBy) {
       case "price_low_high":
-        filtered.sort((a, b) => a.price - b.price)
-        break
+        filtered.sort((a, b) => a.price - b.price);
+        break;
       case "price_high_low":
-        filtered.sort((a, b) => b.price - a.price)
-        break
+        filtered.sort((a, b) => b.price - a.price);
+        break;
       case "name_a_z":
-        filtered.sort((a, b) => a.name.localeCompare(b.name))
-        break
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+        break;
       case "name_z_a":
-        filtered.sort((a, b) => b.name.localeCompare(a.name))
-        break
+        filtered.sort((a, b) => b.name.localeCompare(a.name));
+        break;
       case "rating":
-        filtered.sort((a, b) => b.rating - a.rating)
-        break
+        filtered.sort((a, b) => b.rating - a.rating);
+        break;
     }
 
-    setFilteredProducts(filtered)
-    setCurrentPage(1) // Reset to first page when filters change
-  }, [selectedCategory, sortBy])
+    setFilteredProducts(filtered);
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [selectedCategory, sortBy]);
 
   // Pagination
-  const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE)
-  const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE
-  const endIndex = startIndex + PRODUCTS_PER_PAGE
-  const currentProducts = filteredProducts.slice(startIndex, endIndex)
+  const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
+  const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
+  const endIndex = startIndex + PRODUCTS_PER_PAGE;
+  const currentProducts = filteredProducts.slice(startIndex, endIndex);
 
   const categories = [
     { value: "all", label: "All Categories" },
@@ -185,7 +194,7 @@ export default function ProductsPage() {
     { value: "beauty_health", label: t("beauty_health", language) },
     { value: "toys_games", label: t("toys_games", language) },
     { value: "automotive", label: t("automotive", language) },
-  ]
+  ];
 
   const sortOptions = [
     { value: "name_a_z", label: t("name_a_z", language) },
@@ -193,11 +202,10 @@ export default function ProductsPage() {
     { value: "price_low_high", label: t("price_low_high", language) },
     { value: "price_high_low", label: t("price_high_low", language) },
     { value: "rating", label: t("rating", language) },
-  ]
+  ];
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
-
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}
@@ -210,8 +218,13 @@ export default function ProductsPage() {
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</label>
-                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Category
+                  </label>
+                  <Select
+                    value={selectedCategory}
+                    onValueChange={setSelectedCategory}
+                  >
                     <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
@@ -246,8 +259,8 @@ export default function ProductsPage() {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    setSelectedCategory("all")
-                    setSortBy("name_a_z")
+                    setSelectedCategory("all");
+                    setSortBy("name_a_z");
                   }}
                   className="w-full"
                 >
@@ -279,7 +292,9 @@ export default function ProductsPage() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <p className="text-gray-500 dark:text-gray-400 text-lg">{t("no_products", language)}</p>
+                <p className="text-gray-500 dark:text-gray-400 text-lg">
+                  {t("no_products", language)}
+                </p>
               </div>
             )}
 
@@ -297,18 +312,22 @@ export default function ProductsPage() {
                 </Button>
 
                 <div className="flex space-x-1">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <Button
-                      key={page}
-                      variant={currentPage === page ? "default" : "outline"}
-                      onClick={() => setCurrentPage(page)}
-                      className={`w-10 h-10 ${
-                        currentPage === page ? "bg-green-600 hover:bg-green-700 text-white" : ""
-                      }`}
-                    >
-                      {page}
-                    </Button>
-                  ))}
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (page) => (
+                      <Button
+                        key={page}
+                        variant={currentPage === page ? "default" : "outline"}
+                        onClick={() => setCurrentPage(page)}
+                        className={`w-10 h-10 ${
+                          currentPage === page
+                            ? "bg-green-600 hover:bg-green-700 text-white"
+                            : ""
+                        }`}
+                      >
+                        {page}
+                      </Button>
+                    )
+                  )}
                 </div>
 
                 <Button
@@ -326,5 +345,5 @@ export default function ProductsPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
